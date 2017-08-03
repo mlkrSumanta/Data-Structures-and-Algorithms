@@ -4,7 +4,9 @@ class Graph {
 	
 	public static void main(String[] args) {
 		
-		PrimsAlgo graph = new PrimsAlgo(9);
+		int numberOfEdges = 14;
+//		PrimsAlgo graph = new PrimsAlgo(9, 2*numberOfEdges);
+		KruskalsAlgo graph = new KruskalsAlgo(9, 2*numberOfEdges);
 		graph.addEdge(0, 1, 4);
 		graph.addEdge(0, 7, 8);
 		graph.addEdge(1, 2, 8);
@@ -44,10 +46,10 @@ class KeyHeap {
 	public HeapNode[] nodeArray;
 	public int heapSize;
 
-	public KeyHeap(int size, ArrayList<HeapNode> array) {
+	public KeyHeap(int size) {
 
 		heapSize = 0;
-		nodeArray = new HeapNode[4*size];
+		nodeArray = new HeapNode[size];
 	}
 
 	public int left(int i) {return 2*i + 1;}
@@ -120,13 +122,11 @@ class KeyHeap {
 
 	public void sortedArray() {
 
-		System.out.println();
 		while (heapSize > 0) {
 
 			HeapNode node = extractMin();
-			System.out.print(node.destination + "," + node.key + " | ");
+			System.out.println(node.source + "->" + node.destination + " : " + node.key);
 		}
-		System.out.println();	
 	}
 }	
 
@@ -185,11 +185,16 @@ class SpanningTree {
 
 class PrimsAlgo extends SpanningTree {
 
-	public PrimsAlgo(int size) {super(size);}
+	public int numberOfEdges;
+	public PrimsAlgo(int size, int numberOfEdges) {
+
+		super(size);
+		this.numberOfEdges = numberOfEdges;
+	}
 
 	public void findSpanningTree() {
 
-		KeyHeap heap = new KeyHeap(size, edgeSourceArray);
+		KeyHeap heap = new KeyHeap(numberOfEdges);
 		boolean[] visited = new boolean[size];
 		visited[0] = true;
 
@@ -210,7 +215,6 @@ class PrimsAlgo extends SpanningTree {
 			while (node != null) {
 
 				if (!visited[node.destination]) {heap.insertKey(node);}
-//				System.out.print(node.source + " " + node.destination + " " + node.key);
 				node = node.next;
 			}
 
@@ -218,8 +222,91 @@ class PrimsAlgo extends SpanningTree {
 	}
 }
 
-class KruskalsAlgo {
+class KruskalsAlgo extends SpanningTree {
 
+	public int numberOfEdges;
+	public int size;
+	public ArrayList<HeapNode> mstArray;
+	public ArrayList<HeapNode> tempArray;
+
+	public KruskalsAlgo(int size, int numberOfEdges) {
+
+		super(size);
+		this.size = size;
+		this.numberOfEdges = numberOfEdges;
+		mstArray = new ArrayList<HeapNode>();
+	}
+
+	public void findSpanningTree() {
+
+		KeyHeap heap = new KeyHeap(numberOfEdges);
+
+		for (int i = 0; i < size; i++) {
+			
+			HeapNode node = edgeSourceArray.get(i);
+			while (node != null) {
+
+				heap.insertKey(node);
+				node = node.next;
+			}		
+		}
+
+//		heap.sortedArray();
+
+		while (heap.heapSize > 0) {
+
+			HeapNode node = heap.extractMin();
+			 
+			if (mstArray.isEmpty()) {
+			 	
+			 	mstArray.add(node);
+			 	continue;
+			}
+
+			tempArray = new ArrayList<HeapNode>(mstArray);
+			tempArray.add(node);
+			if (!hasCycle()) {mstArray.add(node);}
+		}
+
+		for (int i = 0; i < mstArray.size(); i++) {
+			
+			HeapNode node = mstArray.get(i);
+			System.out.println(node.source + "->" + node.destination + " : " + node.key);
+		}
+	}
+
+	public boolean hasCycle() {
+
+		int[] parent = new int[size];
+		for (int i = 0; i < size; i++) {parent[i] = -1;}
+		for (int i = 0; i < tempArray.size(); i++) {
+			
+			HeapNode temp = tempArray.get(i);
+			int x = findParent(parent, temp.source);
+			int y = findParent(parent, temp.destination);
+
+			if (x == y) {
+				return true;
+			}
+
+			union(parent, x, y);
+		}
+
+		return false;
+	}
+
+	public int findParent(int[] parent, int vertex) {
+
+		if (parent[vertex] == -1) {return vertex;}
+		return findParent(parent, parent[vertex	]);
+	}
+
+	public void union(int[] parent, int sourceParent, int destinationParent) {
+
+		int sP = findParent(parent, sourceParent);
+		int dP = findParent(parent, destinationParent);
+		parent[dP] = sP;
+	}
 }
 
 class BoruvkasAlgo {
