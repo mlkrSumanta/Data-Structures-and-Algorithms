@@ -112,12 +112,12 @@ class KeyHeap {
 			i = parent(i);
 		}
 
-		if (i != 0 && nodeArray[parent(i)].equals(nodeArray[i])) {
+		/*if (i != 0 && nodeArray[parent(i)].equals(nodeArray[i])) {
 
 			nodeArray[parent(i)].key = Integer.MIN_VALUE;
 			decreaseKey(parent(i), nodeArray[i]);
 			extractMin();
-		}
+		}*/
 	}
 
 	public void sortedArray() {
