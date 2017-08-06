@@ -308,7 +308,3 @@ class KruskalsAlgo extends SpanningTree {
 		parent[dP] = sP;
 	}
 }
-
-class BoruvkasAlgo {
-
-}
