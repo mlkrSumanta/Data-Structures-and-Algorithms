@@ -141,6 +141,7 @@ class Heap {
 			VertexNode temp = heapArray[parent(index)];
 			heapArray[parent(index)] = heapArray[index];
 			heapArray[index] = temp;
+			index = parent(index);
 		}
 
 		if (index != 0 && heapArray[parent(index)].vertex == heapArray[index].vertex) {
