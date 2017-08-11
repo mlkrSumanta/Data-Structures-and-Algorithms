@@ -24,8 +24,6 @@ class BackTrackAlgo {
 
 	public boolean isPossibleNextMove(int row, int col) {
 
-		int moveX;
-		int moveY;
 		if (row >= 0 && row < size && col >= 0 && col < size && result[row][col] == 0) {
 			return true;
 		}
