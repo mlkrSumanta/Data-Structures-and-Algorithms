@@ -1,10 +1,8 @@
-import java.util.*;
-
-class Graph {
+class DijkstrasAlgorithm {
 	
 	public static void main(String[] args) {
 		
-/*		DijkstraAlgo graph = new DijkstraAlgo(9);
+		DijkstraAlgo graph = new DijkstraAlgo(9);
 		graph.addEdge(0, 1, 4);
 		graph.addEdge(0, 7, 8);
 		graph.addEdge(1, 2, 8);
@@ -18,32 +16,8 @@ class Graph {
 		graph.addEdge(5, 6, 2);
 		graph.addEdge(6, 7, 1);
 		graph.addEdge(6, 8, 6);
-		graph.addEdge(7, 8, 7);	*/
-		
-/*		Bellman_FordAlgo graph = new Bellman_FordAlgo(5);
-		graph.addEdge(0, 1, -1);
-		graph.addEdge(0, 2, 4);
-		graph.addEdge(1, 2, 3);
-		graph.addEdge(1, 3, 2);
-		graph.addEdge(3, 1, 1);
-		graph.addEdge(3, 2, 5);
-		graph.addEdge(1, 4, 2);
-		graph.addEdge(4, 3, -3);*/
-
-/*		Floyd_WarshallAlgo graph = new Floyd_WarshallAlgo(4);
-		graph.addEdge(0, 2, -2);
-		graph.addEdge(1, 0, 4);
-		graph.addEdge(1, 2, 3);
-		graph.addEdge(2, 3, 2);
-		graph.addEdge(3, 1, -1);*/
-
-		JohnsonAlgo graph = new JohnsonAlgo(4);
-		graph.addEdge(0, 2, -2);
-		graph.addEdge(1, 0, 4);
-		graph.addEdge(1, 2, 3);
-		graph.addEdge(2, 3, 2);
-		graph.addEdge(3, 1, -1);
-		graph.findShortestPath();
+		graph.addEdge(7, 8, 7);
+		graph.findShortestPath(0);
 	}
 }
 
@@ -264,142 +238,6 @@ class DijkstraAlgo extends GraphImplement {
 			}
 		}
 
-//		for (int i = 0; i < size; i++) {System.out.println("Vertex: " + i + " Weight from Vertex " + v + ": " + vertexArray[i]);}
-	}
-}
-
-class Bellman_FordAlgo extends GraphImplement {
-
-	public int[] resultArray;
-	public int size;
-
-	public Bellman_FordAlgo(int size) {
-
-		super(size, true);
-		this.size = size;
-	}
-
-	public boolean findShortestPath(int vertex) {
-
-		resultArray = new int[size];
-		for (int i = 0; i < size; i++) {resultArray[i] = Integer.MAX_VALUE;}
-		resultArray[vertex] = 0;
-		for (int i = 0; i < size - 1; i++) {
-			for (int j = 0; j < edgeSourceArray.size(); j++) {
-				
-				EdgeNode node = edgeSourceArray.get(j);
-				while (node != null) {
-
-					if (resultArray[node.destination] > resultArray[node.source] + node.key && resultArray[node.source] != Integer.MAX_VALUE) 
-						{resultArray[node.destination] = resultArray[node.source] + node.key;}
-					node = node.next;
-				}
-			}
-		}
-
-		for (int j = 0; j < edgeSourceArray.size(); j++) {
-				
-			EdgeNode node = edgeSourceArray.get(j);
-			while (node != null) {
-
-				if (resultArray[node.destination] > resultArray[node.source] + node.key && resultArray[node.source] != Integer.MAX_VALUE) {
-
-					System.out.println("Cycle exists");
-					return false;
-				}
-				node = node.next;
-			}
-		}
-//		for (int i = 0; i < size; i++) {System.out.println("Vertex: " + i + " Weight from Vertex " + vertex + ": " + resultArray[i]);}
-		return true;
-	}
-}
-
-class Floyd_WarshallAlgo extends GraphImplement {
-
-	public int[][] resultArray;
-
-	public Floyd_WarshallAlgo(int size) {
-
-		super(size, true);
-		resultArray = new int[size][size];
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-
-				if (i == j) {resultArray[i][j] = 0;continue;}
-				resultArray[i][j] = Integer.MAX_VALUE;}
-		}
-	}
-
-	public void findShortestPath() {
-
-		for (int j = 0; j < edgeSourceArray.size(); j++) {
-			
-			EdgeNode node = edgeSourceArray.get(j);
-			while (node != null) {
-
-				resultArray[node.source][node.destination] = node.key;
-				node = node.next;
-			}
-		}
-
-		for (int k = 0; k < size; k++) {
-			for (int i = 0; i < size; i++) {
-				for (int j = 0; j < size; j++) {
-					if (resultArray[k][j] != Integer.MAX_VALUE && resultArray[i][k] != Integer.MAX_VALUE) {
-						if (resultArray[i][j] > resultArray[i][k] + resultArray[k][j]) {resultArray[i][j] = resultArray[i][k] + resultArray[k][j];}
-					}
-				}
-			}
-		}
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {System.out.println("Shortest path from " + i + " to " + j + " is: " + resultArray[i][j]);}
-		}
-	}
-}
-
-class JohnsonAlgo extends GraphImplement {
-
-	public int size;
-	
-	public JohnsonAlgo(int size) {
-
-		super(size + 1, true);
-		this.size = size;
-	}
-
-	public void findShortestPath() {
-
-		for (int i = 0; i < size; i++) {addEdge(size, i, 0);}
-
-		Bellman_FordAlgo g = new Bellman_FordAlgo(size+1);
-		g.edgeSourceArray = new ArrayList<EdgeNode>(edgeSourceArray);
-
-		if (g.findShortestPath(size)) {
-			for (int i = 0; i < size; i++) {
-				
-				EdgeNode node = edgeSourceArray.get(i);
-				while (node != null) {
-	
-					node.key = node.key + g.resultArray[node.source] - g.resultArray[node.destination];
-					node = node.next;
-				}
-			}
-		}
-
-		edgeSourceArray.remove(edgeSourceArray.size() - 1);
-		DijkstraAlgo gr = new DijkstraAlgo(size);
-		gr.edgeSourceArray = new ArrayList<EdgeNode>(edgeSourceArray);
-		
-		for (int i = 0; i < size; i++) {
-
-			gr.findShortestPath(i);
-			for (int j = 0; j < size; j++) {
-				
-				int val = gr.vertexArray[j] - g.resultArray[i] + g.resultArray[j];
-				System.out.println(i + "->" + j + ": " + val);
-			}
-		}
+		for (int i = 0; i < size; i++) {System.out.println("Vertex: " + i + " Weight from Vertex " + v + ": " + vertexArray[i]);}
 	}
 }
