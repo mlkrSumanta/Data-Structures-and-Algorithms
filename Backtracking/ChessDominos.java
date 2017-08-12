@@ -2,7 +2,7 @@ class ChessDominos {
 	
 	public static void main(String[] args) {
 		
-		BackTrackAlgo chess = new BackTrackAlgo(6);
+		BackTrackAlgo chess = new BackTrackAlgo(8);
 		chess.solution();
 	}
 }
@@ -18,9 +18,8 @@ class BackTrackAlgo {
 	public BackTrackAlgo(int size) {
 
 		this.size = size;
-		board = new int[size][size];
-		nextPosX = new int[] {0, 2};
-		nextPosY = new int[] {2, 0};
+		nextPosX = new int[] {0, 0, -1, 1};
+		nextPosY = new int[] {1, -1, 0, 0};
 	}
 
 	public boolean isPossibleNextMove(int row, int col) {
@@ -28,41 +27,21 @@ class BackTrackAlgo {
 			board[row][col] == 0);
 	}
 
-	public boolean isValidPosition(int row, int col, int domino) {
+	public boolean isValidPosition(int row, int col) {
 
-		if (domino == 31) {return true;}
+		for (int i = 0; i < 4; i++) {
+			
+			int moveX1 = row;
+			int moveX2 = row + nextPosX[i];
+			int moveY1 = col;
+			int moveY2 = col + nextPosY[i];
 
-		for (int i = 0; i < 2; i++) {
-			if (nextPosX[i] == 0) {
-				if (isPossibleNextMove(row+nextPosX[i], col+nextPosY[i]) && 
-					isPossibleNextMove(row+nextPosX[i], col+nextPosY[i]+1)) {
-					
-					board[row+nextPosX[i]][col+nextPosY[i]] = 1;
-					board[row+nextPosX[i]][col+nextPosY[i]+1] = 1;
+			if (isPossibleNextMove(moveX1, moveY1) && isPossibleNextMove(moveX2, moveY2)) {
+				
+				board[moveX1][moveY1] = 1;
+				board[moveX2][moveY2] = 1;
 
-					if (isValidPosition(row+nextPosX[i], col+nextPosY[i], domino+1)) {
-						return true;
-					} else {
-
-						board[row+nextPosX[i]][col+nextPosY[i]] = 0;
-						board[row+nextPosX[i]][col+nextPosY[i]+1] = 0;						
-					}
-				}
-			} else {
-				if (isPossibleNextMove(row+nextPosX[i], col+nextPosY[i]) && 
-					isPossibleNextMove(row+nextPosX[i]+1, col+nextPosY[i])) {
-					
-					board[row+nextPosX[i]][col+nextPosY[i]] = 1;
-					board[row+nextPosX[i]+1][col+nextPosY[i]] = 1;
-
-					if (isValidPosition(row+nextPosX[i], col+nextPosY[i], domino+1)) {
-						return true;
-					} else {
-
-						board[row+nextPosX[i]][col+nextPosY[i]] = 0;
-						board[row+nextPosX[i]+1][col+nextPosY[i]] = 0;						
-					}
-				}
+				return true;
 			}
 		}
 
@@ -71,34 +50,47 @@ class BackTrackAlgo {
 
 	public void solution() {
 
-		int count = 0;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				for (int m = 0; m < size; m++) {
 					for (int n = 0; n < size; n++) {
-						if (i < m && j < n) {
-							
+
+						if ((i != m || j != n) && i <= m && j <= n) {
+	
+							int count = 0;						
+							board = new int[size][size];
 							board[i][j] = 1;
 							board[m][n] = 1;
 							for (int k = 0; k < size; k++) {
 								for (int l = 0; l < size; l++) {
-									if (k != i && l != j) {
-										if (isValidPosition(k, l, 1)) {
-
-											count++;
-											break;
-										}
+									if (isValidPosition(k, l)) {
+										count++;
 									}
 								}
 							}
 
-							if (count == 0) {
-								System.out.println("(" + i + "," + j + ")" + "," + "(" + m + "," + n + ")");
+							if (count < 31) {
+								System.out.print("(" + i + "," + j + ")" + "," + "(" + m + "," + n + ")" + "\t");
 							}
 						}
 					}
 				}
 			}
 		}
+
+		/*board = new int[size][size];
+		board[0][0] = 1;
+		board[7][7] = 1;
+		int count = 0;
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				if (isValidPosition(i, j)) {
+					count++;
+				}
+			}
+		}
+
+		if (count == 31){System.out.println("Yep");}*/
 	}
 }
