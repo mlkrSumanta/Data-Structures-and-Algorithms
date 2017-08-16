@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.PriorityQueue;
 
-class PrOne {
+class MaxElArr {
 
 	public static void main(String[] args) {
 		
