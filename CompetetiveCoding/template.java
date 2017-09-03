@@ -8,7 +8,6 @@ class PrTwo {
 		for (int k = 0; k < n; k++) {
 			
 		}
-
 		for (int k = 0; k < n; k++) {System.out.println(resultArr.get(k));}
 	}
 }
